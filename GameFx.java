@@ -1,16 +1,25 @@
 package lab;
 
+import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -87,6 +96,8 @@ public class GameFx extends Application{
 				console.createEachEnemy(enemyName.getText());
 				if(console.enemies.size() < numEnemies) {
 					s.setRoot(setupEnemies2(s));
+				}else {
+					s.setRoot(gamePlay(s));
 				}
 			}
 		});
@@ -94,5 +105,126 @@ public class GameFx extends Application{
 		setupPane3.getChildren().addAll(enemyNameTxt, enemyName, nextBtn);
 		return setupPane3;
 	}
+	
+	public Pane gamePlay(Scene s) {
+		s.getWindow().setHeight(800);
+		console.displayBoard();
+		GridPane board = new GridPane();
+		board.setMaxSize(100, 100);
+		board.setMinSize(100, 100);
+		board.setAlignment(Pos.CENTER);
+		board.setGridLinesVisible(true);
+		for(int i=6;i>=0;i--) {
+			for(int j=6;j>=0;j--) {
+				if(console.board[i][j].equals("$")) {
+					Circle c1 = new Circle(40);
+					c1.setFill(Color.ALICEBLUE);
+					board.add(c1, j, i);
+				}
+				else if (console.board[i][j].equals("@")) {
+					Circle c1 = new Circle(40);
+					c1.setFill(Color.CORAL);
+					board.add(c1, j, i);
+				}
+				else if (console.board[i][j].equals("$")) {
+					Circle c1 = new Circle(40);
+					c1.setFill(Color.BLUEVIOLET);
+					board.add(c1, j, i);
+				}
+				else {
+					Rectangle r1 = new Rectangle(80,80);
+					r1.setFill(Color.SNOW);
+					r1.setStroke(Color.BLACK);
+					board.add(r1, j, i);
+				}
+			}
+		}
+		Button nextBtn = new Button("Exit");
+		nextBtn.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent ae) {
+			System.exit(0);	
+			}
+		});
+		Label title = new Label("Try to escape the Dungeon!");
+		BorderPane gameLayout = new BorderPane();
+		gameLayout.setCenter(board);
+		gameLayout.setBottom(nextBtn);
+		gameLayout.setTop(title);;
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		gameLayout.setLeft(pCControl(s));
+		return gameLayout;
+		
+	}
+	public Pane pCControl(Scene s) {
+		TilePane controls = new TilePane();
+		Button up = new Button("^");
+		up.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent ae) {
+				console.pc.move(new Scanner("w"));
+				console.checkIfPlayerCanAttack();
+				if(console.pc.getLocationX()==6 && console.pc.getLocationY()==6) {
+					System.out.println("You won!");
+					System.exit(1);
+				}
+				console.doEnemiesTurn();
+				s.setRoot(gamePlay(s));
+			}
+		});
+	Button down = new Button("v");
+	down.setOnAction(new EventHandler<ActionEvent>() {
+		public void handle(ActionEvent ae) {
+			console.pc.move(new Scanner("s"));
+			console.checkIfPlayerCanAttack();
+			if(console.pc.getLocationX()==6 && console.pc.getLocationY()==6) {
+				System.out.println("You won!");
+				System.exit(1);
+			}
+			console.doEnemiesTurn();
+			s.setRoot(gamePlay(s));
+		}
+	});
+Button left = new Button("<");
+left.setOnAction(new EventHandler<ActionEvent>() {
+	public void handle(ActionEvent ae) {
+		console.pc.move(new Scanner("a"));
+		console.checkIfPlayerCanAttack();
+		if(console.pc.getLocationX()==6 && console.pc.getLocationY()==6) {
+			System.out.println("You won!");
+			System.exit(1);
+		}
+		console.doEnemiesTurn();
+		s.setRoot(gamePlay(s));
+	}
+});
+Button right = new Button(">");
+right.setOnAction(new EventHandler<ActionEvent>() {
+	public void handle(ActionEvent ae) {
+		console.pc.move(new Scanner("d"));
+		console.checkIfPlayerCanAttack();
+		if(console.pc.getLocationX()==6 && console.pc.getLocationY()==6) {
+			System.out.println("You won!");
+			System.exit(1);
+		}
+		console.doEnemiesTurn();
+		s.setRoot(gamePlay(s));
+	}
+});
+Button sa = new Button("SA");
+sa.setOnAction(new EventHandler<ActionEvent>() {
+	public void handle(ActionEvent ae) {
+		console.pc.move(new Scanner("q"));
+		console.checkIfPlayerCanAttack();
+		if(console.pc.getLocationX()==6 && console.pc.getLocationY()==6) {
+			System.out.println("You won!");
+			System.exit(1);
+		}
+		console.doEnemiesTurn();
+		s.setRoot(gamePlay(s));
+	}
+});
+
+controls.getChildren().addAll(up, down, left, right, sa);
+return controls;
+}
 	}
 
